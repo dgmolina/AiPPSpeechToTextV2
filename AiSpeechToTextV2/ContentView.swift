@@ -11,7 +11,7 @@ struct ContentView: View {
     @State private var isRecording = false
     @State private var recordingTime = 0.0
     
-    let timer = Timer.publish(every: 0.01, on: .main, in: .common).autoconnect()
+    let timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
     
     var body: some View {
         HStack(spacing: 20) {
@@ -37,7 +37,7 @@ struct ContentView: View {
                 .font(.system(size: 20, weight: .medium, design: .monospaced))
                 .onReceive(timer) { _ in
                     if isRecording {
-                        recordingTime += 0.01
+                        recordingTime += 0.1
                     }
                 }
         }
