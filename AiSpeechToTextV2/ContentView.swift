@@ -9,9 +9,9 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var isRecording = false
-    @State private var recordingTime = 0
+    @State private var recordingTime = 0.0
     
-    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    let timer = Timer.publish(every: 0.01, on: .main, in: .common).autoconnect()
     
     var body: some View {
         HStack(spacing: 20) {
@@ -33,11 +33,11 @@ struct ContentView: View {
                 .opacity(isRecording ? 1 : 0.5)
             
             // Timer
-            Text("\(recordingTime)s")
+            Text(String(format: "%.2fs", recordingTime))
                 .font(.system(size: 20, weight: .medium, design: .monospaced))
                 .onReceive(timer) { _ in
                     if isRecording {
-                        recordingTime += 1
+                        recordingTime += 0.01
                     }
                 }
         }
