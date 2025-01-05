@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		28A82AB12D2B512900E8F5B1 /* GoogleGenerativeAI in Frameworks */ = {isa = PBXBuildFile; productRef = 28A82AB02D2B512900E8F5B1 /* GoogleGenerativeAI */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		28A82A6C2D2B148A00E8F5B1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				28A82AB12D2B512900E8F5B1 /* GoogleGenerativeAI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +117,7 @@
 			);
 			name = AiSpeechToTextV2;
 			packageProductDependencies = (
+				28A82AB02D2B512900E8F5B1 /* GoogleGenerativeAI */,
 			);
 			productName = AiSpeechToTextV2;
 			productReference = 28A82A5A2D2B148800E8F5B1 /* AiSpeechToTextV2.app */;
@@ -195,6 +201,9 @@
 			);
 			mainGroup = 28A82A512D2B148800E8F5B1;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				28A82AAF2D2B512900E8F5B1 /* XCRemoteSwiftPackageReference "generative-ai-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 28A82A5B2D2B148800E8F5B1 /* Products */;
 			projectDirPath = "";
@@ -551,6 +560,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		28A82AAF2D2B512900E8F5B1 /* XCRemoteSwiftPackageReference "generative-ai-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/generative-ai-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.5.6;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		28A82AB02D2B512900E8F5B1 /* GoogleGenerativeAI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 28A82AAF2D2B512900E8F5B1 /* XCRemoteSwiftPackageReference "generative-ai-swift" */;
+			productName = GoogleGenerativeAI;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 28A82A522D2B148800E8F5B1 /* Project object */;
 }
