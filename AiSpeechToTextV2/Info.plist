@@ -1,0 +1,3 @@
+{
+	"NSMicrophoneUsageDescription" = "The microphone is required to capture audio for the transcription.";
+}

@@ -13,5 +13,8 @@ struct AiSpeechToTextV2App: App {
         WindowGroup {
             ContentView()
         }
+        .windowStyle(HiddenTitleBarWindowStyle()) // Optional: hides the title bar
+        .defaultSize(width: 400, height: 200) // Set default window size
+        .windowResizability(.contentSize) // Prevent resizing
     }
 }
