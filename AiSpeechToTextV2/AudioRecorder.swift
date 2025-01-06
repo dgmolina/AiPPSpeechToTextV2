@@ -12,6 +12,7 @@ class AudioRecorder: NSObject, ObservableObject {
     private var captureSession: AVCaptureSession?
     private var audioFileOutput: AVCaptureAudioFileOutput?
     private var recordings: [URL] = []
+    private var completionHandler: ((URL?) -> Void)?
     
     @Published var isRecording = false
     
@@ -70,13 +71,8 @@ class AudioRecorder: NSObject, ObservableObject {
         audioFileOutput?.stopRecording()
         isRecording = false
         
-        // Get the latest recording URL
-        if let outputURL = audioFileOutput?.outputFileURL {
-            recordings.append(outputURL)
-            completion(outputURL)
-        } else {
-            completion(nil)
-        }
+        // Store the completion handler to call it later
+        self.completionHandler = completion
     }
     
     private func getDocumentsDirectory() -> URL {
@@ -98,14 +94,18 @@ extension AudioRecorder: AVCaptureFileOutputRecordingDelegate {
                     error: Error?) {
         if let error = error {
             print("Recording error: \(error.localizedDescription)")
+            completionHandler?(nil) // Notify of failure
         } else {
             print("Recording finished successfully: \(outputFileURL)")
-            // Verify the file exists
             if FileManager.default.fileExists(atPath: outputFileURL.path) {
                 print("File exists at: \(outputFileURL.path)")
+                recordings.append(outputFileURL)
+                completionHandler?(outputFileURL) // Notify of success
             } else {
                 print("File does NOT exist at: \(outputFileURL.path)")
+                completionHandler?(nil) // Notify of failure
             }
         }
+        completionHandler = nil // Clear the handler
     }
 }

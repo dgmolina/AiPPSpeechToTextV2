@@ -47,9 +47,7 @@ class RecordingManager: ObservableObject {
             if let url = recordingURL {
                 self.logger.info("Recording stopped. Waiting 2 seconds before starting transcription...")
                 
-                // Add a 2-second delay before starting transcription
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    Task {
+                Task {
                         do {
                             DispatchQueue.main.async {
                                 self.isLoading = true
