@@ -45,7 +45,7 @@ class RecordingManager: ObservableObject {
     private func stopRecording() {
         audioRecorder.stopRecording { recordingURL in
             if let url = recordingURL {
-                logger.info("Recording stopped. Starting transcription process...")
+                self.logger.info("Recording stopped. Starting transcription process...")
                 
                 Task {
                     do {
@@ -70,7 +70,7 @@ class RecordingManager: ObservableObject {
                     }
                 }
             } else {
-                logger.error("No recording URL found after stopping recording.")
+                self.logger.error("No recording URL found after stopping recording.")
             }
         }
         isRecording = false
