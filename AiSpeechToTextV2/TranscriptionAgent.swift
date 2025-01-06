@@ -15,6 +15,9 @@ class TranscriptionAgent: ObservableObject {
     @Published var errorMessage: String?
     
     init(apiKey: String) {
+        guard !apiKey.isEmpty else {
+            fatalError("API key cannot be empty.")
+        }
         self.model = GenerativeModel(name: "gemini-2.0-flash-exp", apiKey: apiKey)
     }
     

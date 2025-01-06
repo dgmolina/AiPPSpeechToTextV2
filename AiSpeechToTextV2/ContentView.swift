@@ -11,7 +11,12 @@ import AVFoundation
 struct ContentView: View {
     @StateObject private var audioPermissionManager = AudioPermissionManager()
     @StateObject private var audioRecorder = AudioRecorder()
-    @StateObject private var transcriptionAgent = TranscriptionAgent(apiKey: "YOUR_API_KEY")
+    @StateObject private var transcriptionAgent: TranscriptionAgent = {
+        guard let apiKey = ProcessInfo.processInfo.environment["AIPP_GEMINI_API_KEY"] else {
+            fatalError("AIPP_GEMINI_API_KEY environment variable is not set.")
+        }
+        return TranscriptionAgent(apiKey: apiKey)
+    }()
     @State private var recordingTime = 0.0
     
     let timer = Timer.publish(every: 0.01, on: .main, in: .common).autoconnect()
