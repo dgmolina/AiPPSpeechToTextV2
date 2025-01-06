@@ -59,13 +59,13 @@ class RecordingManager: ObservableObject {
                         DispatchQueue.main.async {
                             self.transcription = transcription
                             self.isLoading = false
-                            self.logger.error("Transcription failed: \(error.localizedDescription)")
                             self.logger.info("Transcription completed successfully.")
                         }
                     } catch {
                         DispatchQueue.main.async {
                             self.errorMessage = error.localizedDescription
                             self.isLoading = false
+                            self.logger.error("Transcription failed: \(error.localizedDescription)")
                         }
                     }
                 }
