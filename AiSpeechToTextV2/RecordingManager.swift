@@ -45,27 +45,30 @@ class RecordingManager: ObservableObject {
     private func stopRecording() {
         audioRecorder.stopRecording { recordingURL in
             if let url = recordingURL {
-                self.logger.info("Recording stopped. Starting transcription process...")
+                self.logger.info("Recording stopped. Waiting 2 seconds before starting transcription...")
                 
-                Task {
-                    do {
-                        DispatchQueue.main.async {
-                            self.isLoading = true
-                            self.errorMessage = nil
-                        }
-                        
-                        let transcription = try await self.transcriptionAgent.transcribeRecording(at: url)
-                        
-                        DispatchQueue.main.async {
-                            self.transcription = transcription
-                            self.isLoading = false
-                            self.logger.info("Transcription completed successfully.")
-                        }
-                    } catch {
-                        DispatchQueue.main.async {
-                            self.errorMessage = error.localizedDescription
-                            self.isLoading = false
-                            self.logger.error("Transcription failed: \(error.localizedDescription)")
+                // Add a 2-second delay before starting transcription
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    Task {
+                        do {
+                            DispatchQueue.main.async {
+                                self.isLoading = true
+                                self.errorMessage = nil
+                            }
+                            
+                            let transcription = try await self.transcriptionAgent.transcribeRecording(at: url)
+                            
+                            DispatchQueue.main.async {
+                                self.transcription = transcription
+                                self.isLoading = false
+                                self.logger.info("Transcription completed successfully.")
+                            }
+                        } catch {
+                            DispatchQueue.main.async {
+                                self.errorMessage = error.localizedDescription
+                                self.isLoading = false
+                                self.logger.error("Transcription failed: \(error.localizedDescription)")
+                            }
                         }
                     }
                 }
