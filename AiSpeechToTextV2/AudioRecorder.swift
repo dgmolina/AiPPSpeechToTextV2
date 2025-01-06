@@ -71,8 +71,9 @@ class AudioRecorder: NSObject, ObservableObject {
         isRecording = false
         
         // Get the latest recording URL
-        if let lastRecording = recordings.last {
-            completion(lastRecording)
+        if let outputURL = audioFileOutput?.outputFileURL {
+            recordings.append(outputURL)
+            completion(outputURL)
         } else {
             completion(nil)
         }
@@ -99,6 +100,12 @@ extension AudioRecorder: AVCaptureFileOutputRecordingDelegate {
             print("Recording error: \(error.localizedDescription)")
         } else {
             print("Recording finished successfully: \(outputFileURL)")
+            // Verify the file exists
+            if FileManager.default.fileExists(atPath: outputFileURL.path) {
+                print("File exists at: \(outputFileURL.path)")
+            } else {
+                print("File does NOT exist at: \(outputFileURL.path)")
+            }
         }
     }
 }

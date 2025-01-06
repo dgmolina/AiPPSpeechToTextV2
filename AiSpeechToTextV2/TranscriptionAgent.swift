@@ -26,13 +26,22 @@ class TranscriptionAgent: ObservableObject {
             throw NSError(domain: "TranscriptionError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Model not initialized"])
         }
         
+        print("Starting transcription for file at: \(url.path)")
+        
         let audioData = try Data(contentsOf: url)
         let mimeType = getMIMEType(from: url)
+        
+        print("Audio data loaded. Size: \(audioData.count) bytes")
         
         let audioPart = ModelContent.Part.data(mimetype: mimeType, audioData)
         let promptPart = ModelContent.Part.text("Transcribe this audio")
         
+        print("Sending request to Gemini API...")
+        
         let response = try await model.generateContent(promptPart, audioPart)
+        
+        print("Received response from Gemini API")
+        
         return response.text ?? "No transcription available"
     }
     

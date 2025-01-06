@@ -19,8 +19,8 @@ class RecordingManager: ObservableObject {
             logger.error("AIPP_GEMINI_API_KEY environment variable is not set.")
             fatalError("AIPP_GEMINI_API_KEY environment variable is not set.")
         }
+        logger.info("RecordingManager initialized with API key: \(apiKey.prefix(4))...") // Log first 4 chars for debugging
         self.transcriptionAgent = TranscriptionAgent(apiKey: apiKey)
-        logger.info("RecordingManager initialized with API key.")
     }
     
     func toggleRecording() {
