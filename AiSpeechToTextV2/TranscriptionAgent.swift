@@ -26,7 +26,7 @@ class TranscriptionAgent: ObservableObject {
         let audioData = try Data(contentsOf: url)
         let mimeType = getMIMEType(from: url)
         
-        let audioPart = ModelContent.Part.data(mimetype: mimeType, audioData)
+        let audioPart = ModelContent.Part.data(mimeType, audioData)
         let promptPart = ModelContent.Part.text("Transcribe this audio")
         
         let response = try await model.generateContent(promptPart, audioPart)

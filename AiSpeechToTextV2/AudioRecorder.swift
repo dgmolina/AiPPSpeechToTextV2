@@ -11,6 +11,7 @@ import AVFoundation
 class AudioRecorder: NSObject, ObservableObject {
     private var captureSession: AVCaptureSession?
     private var audioFileOutput: AVCaptureAudioFileOutput?
+    private var recordings: [URL] = []
     
     @Published var isRecording = false
     
