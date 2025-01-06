@@ -32,19 +32,22 @@ class TranscriptionAgent: ObservableObject {
         let mimeType = getMIMEType(from: url)
         
         print("Audio data loaded. Size: \(audioData.count) bytes")
+        print("MIME type: \(mimeType)")
         
         let audioPart = ModelContent.Part.data(mimetype: mimeType, audioData)
         let promptPart = ModelContent.Part.text("Transcribe this audio")
         
         print("Sending request to Gemini API...")
         
-        let response = try await model.generateContent(promptPart, audioPart)
-        
-        print("Received response from Gemini API")
-        
-        return response.text ?? "No transcription available"
+        do {
+            let response = try await model.generateContent(promptPart, audioPart)
+            print("Received response from Gemini API")
+            return response.text ?? "No transcription available"
+        } catch {
+            print("API request failed: \(error)")
+            throw error
+        }
     }
-    
     private func getMIMEType(from url: URL) -> String {
         let fileExtension = url.pathExtension
         switch fileExtension {
