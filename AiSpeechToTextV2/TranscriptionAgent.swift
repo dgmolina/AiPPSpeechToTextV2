@@ -7,6 +7,7 @@
 
 import Foundation
 import GoogleGenerativeAI
+import AppKit
 
 class TranscriptionAgent: ObservableObject {
     private var model: GenerativeModel?
@@ -55,7 +56,9 @@ class TranscriptionAgent: ObservableObject {
         do {
             let response = try await model.generateContent(promptPart, audioPart)
             print("Received response from Gemini API")
-            return response.text ?? "No transcription available"
+            let transcription = response.text ?? "No transcription available"
+            copyToClipboard(transcription) // Add this line
+            return transcription
         } catch {
             print("API request failed: \(error)")
             throw error
@@ -71,4 +74,12 @@ class TranscriptionAgent: ObservableObject {
         }
     }
 
+}
+
+extension TranscriptionAgent {
+    func copyToClipboard(_ text: String) {
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        pasteboard.setString(text, forType: .string)
+    }
 }
