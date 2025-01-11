@@ -78,8 +78,33 @@ class TranscriptionAgent: ObservableObject {
 
 extension TranscriptionAgent {
     func copyToClipboard(_ text: String) {
+        // First copy to clipboard
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
         pasteboard.setString(text, forType: .string)
+
+        // Then simulate CMD+V to paste in current focus
+        DispatchQueue.main.async {
+            let source = CGEventSource(stateID: .privateState)
+
+            // Create CMD down event
+            let cmdDown = CGEvent(keyboardEventSource: source, virtualKey: 0x37, keyDown: true)
+            // Create V down event
+            let vDown = CGEvent(keyboardEventSource: source, virtualKey: 0x09, keyDown: true)
+            // Create V up event
+            let vUp = CGEvent(keyboardEventSource: source, virtualKey: 0x09, keyDown: false)
+            // Create CMD up event
+            let cmdUp = CGEvent(keyboardEventSource: source, virtualKey: 0x37, keyDown: false)
+
+            // Set CMD flag
+            vDown?.flags = .maskCommand
+            vUp?.flags = .maskCommand
+
+            // Post events
+            cmdDown?.post(tap: .cghidEventTap)
+            vDown?.post(tap: .cghidEventTap)
+            vUp?.post(tap: .cghidEventTap)
+            cmdUp?.post(tap: .cghidEventTap)
+        }
     }
 }

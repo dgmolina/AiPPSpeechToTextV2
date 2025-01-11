@@ -1,3 +1,8 @@
-{
-	"NSMicrophoneUsageDescription" = "The microphone is required to capture audio for the transcription.";
-}
+<dict>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>The microphone is required to capture audio for the transcription.</string>
+    <key>NSAccessibilityUsageDescription</key>
+    <string>This app needs accessibility access to listen for keyboard shortcuts.</string>
+    <key>NSAppleEventsUsageDescription</key>
+    <string>This app needs permission to listen for keyboard shortcuts.</string>
+</dict>
