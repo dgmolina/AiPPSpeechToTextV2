@@ -13,8 +13,9 @@ class KeyboardShortcutManager: ObservableObject {
     private func setupEventMonitor() {
         // Use global monitor to catch events even when app is in background
         eventMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.keyDown]) { [weak self] event in
-            if event.modifierFlags.contains(.option) &&
-               event.keyCode == kVK_ANSI_R {
+            // Check for option + cmd + spacebar
+            if event.modifierFlags.contains([.option, .command]) &&
+               event.keyCode == kVK_Space {
                 DispatchQueue.main.async {
                     self?.onShortcutTriggered?()
                 }

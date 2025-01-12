@@ -12,8 +12,8 @@ struct AiSpeechToTextV2App: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     var body: some Scene {
-        WindowGroup {
-            ContentView()
+        Settings {
+            EmptyView()
         }
         .commands {
             // Prevent app from terminating when last window is closed
@@ -28,6 +28,7 @@ struct AiSpeechToTextV2App: App {
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     var statusItem: NSStatusItem?
+    var window: NSWindow?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Create status bar item
@@ -42,22 +43,53 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         statusItem?.menu = menu
 
-        // Keep app running in background
+        // Set initial activation policy
         NSApp.setActivationPolicy(.accessory)
+
+        // Create and configure window if needed
+        createWindowIfNeeded()
+    }
+
+    private func createWindowIfNeeded() {
+        if window == nil {
+            // Create a new window
+            window = NSWindow(
+                contentRect: NSRect(x: 0, y: 0, width: 480, height: 300),
+                styleMask: [.titled, .closable, .miniaturizable, .resizable],
+                backing: .buffered,
+                defer: false
+            )
+            window?.center()
+            window?.title = "AiSpeechToTextV2"
+            window?.isReleasedWhenClosed = false
+
+            // Set the ContentView as the window's content
+            window?.contentView = NSHostingView(rootView: ContentView())
+        }
     }
 
     @objc func showApp() {
-        NSApp.setActivationPolicy(.regular)
-        NSApp.activate(ignoringOtherApps: true)
+        // Ensure window exists
+        createWindowIfNeeded()
 
-        // Show window if hidden
-        if let window = NSApp.windows.first {
-            window.makeKeyAndOrderFront(nil)
-        }
+        // Show the app in dock
+        NSApp.setActivationPolicy(.regular)
+
+        // Bring window to front and make it key
+        window?.makeKeyAndOrderFront(nil)
+        window?.center()
+
+        // Activate the app
+        NSApp.activate(ignoringOtherApps: true)
     }
 
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
         showApp()
         return true
+    }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        // Clean up when app terminates
+        window = nil
     }
 }

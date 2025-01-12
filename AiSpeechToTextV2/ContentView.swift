@@ -58,7 +58,7 @@ struct ContentView: View {
             }
 
             // Update shortcut hint
-            Text("Press ⌥R to start/stop recording")
+            Text("Press ⌥⌘Space to start/stop recording")
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .padding(.top)
