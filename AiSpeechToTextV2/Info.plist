@@ -5,4 +5,8 @@
     <string>This app needs accessibility access to listen for keyboard shortcuts.</string>
     <key>NSAppleEventsUsageDescription</key>
     <string>This app needs permission to listen for keyboard shortcuts.</string>
+    <key>LSBackgroundOnly</key>
+    <true/>
+    <key>LSUIElement</key>
+    <true/>
 </dict>

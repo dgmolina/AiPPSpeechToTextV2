@@ -11,12 +11,15 @@ class KeyboardShortcutManager: ObservableObject {
     }
 
     private func setupEventMonitor() {
-        eventMonitor = NSEvent.addLocalMonitorForEvents(matching: [.keyDown]) { [weak self] event in
-            if event.modifierFlags.contains(.option) &&
-               event.keyCode == kVK_ANSI_R {
-                self?.onShortcutTriggered?()
+        // Use global monitor to catch events even when app is in background
+        eventMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.keyDown]) { [weak self] event in
+            // Check for option + cmd + spacebar
+            if event.modifierFlags.contains([.option, .command]) &&
+               event.keyCode == kVK_Space {
+                DispatchQueue.main.async {
+                    self?.onShortcutTriggered?()
+                }
             }
-            return event
         }
     }
 

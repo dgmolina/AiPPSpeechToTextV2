@@ -4,25 +4,30 @@ import os.log
 
 class RecordingManager: ObservableObject {
     private let logger = Logger(subsystem: "com.yourapp.AiSpeechToTextV2", category: "RecordingManager")
-    
+
     @Published var isRecording = false
     @Published var recordingTime = 0.0
     @Published var transcription: String = ""
     @Published var errorMessage: String?
     @Published var isLoading = false
-    
-    private let audioRecorder = AudioRecorder()
-    private let transcriptionAgent: TranscriptionAgent
-    
-    init() {
-        guard let apiKey = ProcessInfo.processInfo.environment["AIPP_GEMINI_API_KEY"] else {
-            logger.error("AIPP_GEMINI_API_KEY environment variable is not set.")
-            fatalError("AIPP_GEMINI_API_KEY environment variable is not set.")
-        }
-        logger.info("RecordingManager initialized with API key: \(apiKey.prefix(4))...") // Log first 4 chars for debugging
-        self.transcriptionAgent = TranscriptionAgent(apiKey: apiKey)
+
+    private let audioRecorder = AudioRecorder()    
+    private var _transcriptionAgent: TranscriptionAgent? // Make it optional and private
+    var transcriptionAgent: TranscriptionAgent { // Computed property to safely access it
+        return _transcriptionAgent ?? TranscriptionAgent(apiKey: "") // Return default if not initialized
     }
-    
+    private let soundEffectPlayer = SoundEffectPlayer()
+
+    init() {
+        guard let apiKey = ProcessInfo.processInfo.environment["AIPP_GEMINI_API_KEY"], !apiKey.isEmpty else {
+            self.errorMessage = "API key not set. Please set the AIPP_GEMINI_API_KEY environment variable."
+            self.isLoading = false // Ensure isLoading is false in error case
+            return // Early return to prevent further initialization with invalid key
+        }
+        logger.info("RecordingManager initialized with API key: \(apiKey.prefix(4))...")
+        _transcriptionAgent = TranscriptionAgent(apiKey: apiKey) // Initialize if API key is valid
+    }
+
     func toggleRecording() {
         if isRecording {
             logger.info("Stopping recording...")
@@ -32,8 +37,9 @@ class RecordingManager: ObservableObject {
             startRecording()
         }
     }
-    
+
     private func startRecording() {
+        soundEffectPlayer.playStartSound()
         audioRecorder.startRecording()
         isRecording = true
         recordingTime = 0
@@ -41,21 +47,22 @@ class RecordingManager: ObservableObject {
         errorMessage = nil
         logger.info("Recording started.")
     }
-    
+
     private func stopRecording() {
+        soundEffectPlayer.playStopSound()
         audioRecorder.stopRecording { recordingURL in
             if let url = recordingURL {
                 self.logger.info("Recording stopped. Starting transcription...")
-                
+
                 Task {
                     do {
                         DispatchQueue.main.async {
                             self.isLoading = true
                             self.errorMessage = nil
                         }
-                        
+
                         let transcription = try await self.transcriptionAgent.transcribeRecording(at: url)
-                        
+
                         DispatchQueue.main.async {
                             self.transcription = transcription
                             self.isLoading = false
