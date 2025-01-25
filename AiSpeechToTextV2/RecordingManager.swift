@@ -11,17 +11,21 @@ class RecordingManager: ObservableObject {
     @Published var errorMessage: String?
     @Published var isLoading = false
 
-    private let audioRecorder = AudioRecorder()
-    private let transcriptionAgent: TranscriptionAgent
+    private let audioRecorder = AudioRecorder()    
+    private var _transcriptionAgent: TranscriptionAgent? // Make it optional and private
+    var transcriptionAgent: TranscriptionAgent { // Computed property to safely access it
+        return _transcriptionAgent ?? TranscriptionAgent(apiKey: "") // Return default if not initialized
+    }
     private let soundEffectPlayer = SoundEffectPlayer()
 
     init() {
-        guard let apiKey = ProcessInfo.processInfo.environment["AIPP_GEMINI_API_KEY"] else {
-            logger.error("AIPP_GEMINI_API_KEY environment variable is not set.")
-            fatalError("AIPP_GEMINI_API_KEY environment variable is not set.")
+        guard let apiKey = ProcessInfo.processInfo.environment["AIPP_GEMINI_API_KEY"], !apiKey.isEmpty else {
+            self.errorMessage = "API key not set. Please set the AIPP_GEMINI_API_KEY environment variable."
+            self.isLoading = false // Ensure isLoading is false in error case
+            return // Early return to prevent further initialization with invalid key
         }
-        logger.info("RecordingManager initialized with API key: \(apiKey.prefix(4))...") // Log first 4 chars for debugging
-        self.transcriptionAgent = TranscriptionAgent(apiKey: apiKey)
+        logger.info("RecordingManager initialized with API key: \(apiKey.prefix(4))...")
+        _transcriptionAgent = TranscriptionAgent(apiKey: apiKey) // Initialize if API key is valid
     }
 
     func toggleRecording() {

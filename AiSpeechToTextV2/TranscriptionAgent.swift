@@ -8,16 +8,20 @@
 import Foundation
 import GoogleGenerativeAI
 import AppKit
+import os.log
 
 class TranscriptionAgent: ObservableObject {
+    private let logger = Logger(subsystem: "com.yourapp.AiSpeechToTextV2", category: "RecordingManager")
+
     private var model: GenerativeModel?
     @Published var isLoading = false
     @Published var transcription: String = ""
     @Published var errorMessage: String?
 
-    init(apiKey: String) {
+    init(apiKey: String = "") { // Default to empty string
         guard !apiKey.isEmpty else {
-            fatalError("API key cannot be empty.")
+            logger.error("TranscriptionAgent initialized with empty API key.")
+            return // Do not initialize model if API key is empty
         }
         self.model = GenerativeModel(name: "gemini-2.0-flash-exp", apiKey: apiKey)
     }
@@ -56,7 +60,8 @@ class TranscriptionAgent: ObservableObject {
         do {
             let response = try await model.generateContent(promptPart, audioPart)
             print("Received response from Gemini API")
-            let transcription = response.text ?? "No transcription available"
+            var transcription = response.text ?? "No transcription available"
+            transcription = transcription.trimmingCharacters(in: .newlines) // Remove trailing newline
             copyToClipboard(transcription) // Add this line
             return transcription
         } catch {

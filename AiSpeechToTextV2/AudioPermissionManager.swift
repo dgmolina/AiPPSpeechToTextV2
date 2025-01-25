@@ -1,6 +1,7 @@
 import Foundation
 import AppKit
 import AVFoundation
+import Carbon
 
 class AudioPermissionManager: ObservableObject {
   @Published var permissionGranted: Bool = false

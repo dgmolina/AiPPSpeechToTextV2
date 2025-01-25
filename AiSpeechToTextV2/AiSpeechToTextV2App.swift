@@ -63,8 +63,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             window?.title = "AiSpeechToTextV2"
             window?.isReleasedWhenClosed = false
 
-            // Set the ContentView as the window's content
-            window?.contentView = NSHostingView(rootView: ContentView())
+            // Set the PermissionsView as the window's content
+            window?.contentView = NSHostingView(rootView: PermissionsView())
         }
     }
 
