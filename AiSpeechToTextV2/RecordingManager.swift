@@ -11,7 +11,7 @@ class RecordingManager: ObservableObject {
     @Published var errorMessage: String?
     @Published var isLoading = false
 
-    private let audioRecorder = AudioRecorder()    
+    private let audioRecorder = AudioRecorder()
     private var _transcriptionAgent: TranscriptionAgent? // Make it optional and private
     var transcriptionAgent: TranscriptionAgent { // Computed property to safely access it
         return _transcriptionAgent ?? TranscriptionAgent(apiKey: "") // Return default if not initialized
@@ -28,10 +28,10 @@ class RecordingManager: ObservableObject {
         _transcriptionAgent = TranscriptionAgent(apiKey: apiKey) // Initialize if API key is valid
     }
 
-    func toggleRecording() {
+    func toggleRecording(isTranslationEnabled: Bool = false) {
         if isRecording {
             logger.info("Stopping recording...")
-            stopRecording()
+            stopRecording(isTranslationEnabled: isTranslationEnabled)
         } else {
             logger.info("Starting recording...")
             startRecording()
@@ -48,8 +48,7 @@ class RecordingManager: ObservableObject {
         logger.info("Recording started.")
     }
 
-    private func stopRecording() {
-        soundEffectPlayer.playStopSound()
+    private func stopRecording(isTranslationEnabled: Bool = false) {
         audioRecorder.stopRecording { recordingURL in
             if let url = recordingURL {
                 self.logger.info("Recording stopped. Starting transcription...")
@@ -61,7 +60,7 @@ class RecordingManager: ObservableObject {
                             self.errorMessage = nil
                         }
 
-                        let transcription = try await self.transcriptionAgent.transcribeRecording(at: url)
+                        let transcription = try await self.transcriptionAgent.transcribeRecording(at: url, isTranslationEnabled: isTranslationEnabled)
 
                         DispatchQueue.main.async {
                             self.transcription = transcription

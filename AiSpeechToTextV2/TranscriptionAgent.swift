@@ -26,7 +26,8 @@ class TranscriptionAgent: ObservableObject {
         self.model = GenerativeModel(name: "gemini-2.0-flash-exp", apiKey: apiKey)
     }
 
-    func transcribeRecording(at url: URL) async throws -> String {
+    func transcribeRecording(at url: URL, isTranslationEnabled: Bool) async throws -> String {
+        print("isTranslationEnabled", isTranslationEnabled)
         guard let model = model else {
             throw NSError(domain: "TranscriptionError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Model not initialized"])
         }
@@ -40,7 +41,7 @@ class TranscriptionAgent: ObservableObject {
         print("MIME type: \(mimeType)")
 
         let audioPart = ModelContent.Part.data(mimetype: mimeType, audioData)
-        let promptPart = ModelContent.Part.text("""
+        var prompt = """
         Transcribe this audio and clean up the transcription by:
         1. Remove self-corrections (e.g., "I went to the park. I mean. The beach" should become "I went to the beach")
         2. Remove filler words and pauses (e.g., "uh", "ah", "like")
@@ -53,7 +54,19 @@ class TranscriptionAgent: ObservableObject {
         - "A reunião será. Ah. Em. Amanhã" → "A reunião será amanhã"
 
         Please provide a clean, polished transcription.
-        """)
+        """
+
+        if isTranslationEnabled {
+            prompt += """
+            **After cleaning**, translate the text to English and return **ONLY THE ENGLISH TRANSLATION** with no additional text.  
+
+            Examples of correct output:  
+            - "The problem is solved?" (for Portuguese input: "Será que o problema foi solucionado?")  
+            - "The presentation is tomorrow." (for Portuguese input: "A apresentação será. Uh. Amanhã")
+            """
+        }
+
+        let promptPart = ModelContent.Part.text(prompt)
 
         print("Sending request to Gemini API...")
 
