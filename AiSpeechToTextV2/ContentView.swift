@@ -12,6 +12,7 @@ struct ContentView: View {
     @StateObject private var audioPermissionManager = AudioPermissionManager()
     @StateObject private var recordingManager = RecordingManager()
     @StateObject private var keyboardManager = KeyboardShortcutManager()
+    @State private var isTranslationEnabled = false
 
     let timer = Timer.publish(every: 0.01, on: .main, in: .common).autoconnect()
 
@@ -19,7 +20,9 @@ struct ContentView: View {
         VStack {
             // Recording Controls
             HStack(spacing: 20) {
-                Button(action: recordingManager.toggleRecording) {
+                Button(action: {
+                    recordingManager.toggleRecording(isTranslationEnabled: isTranslationEnabled)
+                }) {
                     Image(systemName: "mic.fill")
                         .font(.system(size: 30))
                         .foregroundColor(audioPermissionManager.permissionGranted ? .primary : .gray)
@@ -51,6 +54,9 @@ struct ContentView: View {
                 .frame(maxHeight: 200)
             }
 
+            Toggle("Translate to English", isOn: $isTranslationEnabled)
+                .padding()
+
             if let error = recordingManager.errorMessage {
                 Text("Error: \(error)")
                     .foregroundColor(.red)
@@ -72,7 +78,7 @@ struct ContentView: View {
         .onAppear {
             keyboardManager.onShortcutTriggered = {
                 if audioPermissionManager.permissionGranted {
-                    recordingManager.toggleRecording()
+                    recordingManager.toggleRecording(isTranslationEnabled: isTranslationEnabled)
                 }
             }
         }
